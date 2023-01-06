@@ -71,7 +71,7 @@ public class ShaderPatcherEditor : ModuleRules
 		{
 			"MOD_NAME=TEXT(\"ShaderPatcher\")",
 			"MOD_VERSION=1.0",
-			"IS_INTERNAL_MODE=true"
+			"IS_INTERNAL_MODE=false"
 		});
 	}
 }
