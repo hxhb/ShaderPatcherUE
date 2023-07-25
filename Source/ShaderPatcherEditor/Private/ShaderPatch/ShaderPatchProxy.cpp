@@ -4,6 +4,7 @@
 #include "ShaderLibUtils/FlibShaderCodeLibraryHelper.h"
 #include "ShaderPatch/FlibShaderPatchHelper.h"
 #include "ShaderPatcherEditor.h"
+#include "CreatePatch/PatcherProxy.h"
 
 #define LOCTEXT_NAMESPACE "HotPatcherShaderPatchProxy"
 
@@ -52,6 +53,8 @@ bool UShaderPatchProxy::DoExport()
 			FText Msg = LOCTEXT("GeneratedShaderPatch", "Successd to Generated the Shader Patch.");
 			TArray<FName> FormatNames;
 			ShaderFormatLibraryMap.GetKeys(FormatNames);
+
+			TArray<FString> ShaderLibPaths;
 			for(const auto& FormatName:FormatNames)
 			{
 				TArray<FString> LibraryNames= ShaderFormatLibraryMap[FormatName].Array();
@@ -60,6 +63,7 @@ bool UShaderPatchProxy::DoExport()
 					FString OutputFilePath = UFlibShaderCodeLibraryHelper::GetCodeArchiveFilename(SaveToPath, LibrartName, FormatName);
 					if(FPaths::FileExists(OutputFilePath))
 					{
+						ShaderLibPaths.Add(OutputFilePath);
 						bStatus = true;
 						if(!IsRunningCommandlet())
 						{
@@ -74,7 +78,13 @@ bool UShaderPatchProxy::DoExport()
 					{
 						UE_LOG(LogShaderPatcherEditor,Display,TEXT("ERROR: %s not found!"),*OutputFilePath);
 					}
+
+					
 				}
+			}
+			if(PlatformConfig.bCreatePak)
+			{
+				CreatePak(ShaderLibPaths,PlatformConfig);
 			}
 		}
 	}
@@ -100,6 +110,49 @@ bool UShaderPatchProxy::DoExport()
 		}
 	}
 	return bStatus;
+}
+
+bool UShaderPatchProxy::CreatePak(const TArray<FString>& Files, const FShaderPatchConf& Conf)
+{
+	TSharedPtr<FExportPatchSettings> PatchSetting = MakeShareable(new FExportPatchSettings);
+	PatchSetting->VersionId = Conf.PakConfig.ConfigName;
+	PatchSetting->PakTargetPlatforms.Add(Conf.Platform);
+	FPlatformExternAssets PakExternAssets;
+	PakExternAssets.TargetPlatform = Conf.Platform;
+
+	for(const auto& File:Files)
+	{
+		FExternFileInfo ExternFileInfo;
+		FString Filename;
+		{
+			FString BaseFilename = FPaths::GetBaseFilename(File,true);
+			FString Extension = FPaths::GetExtension(File,true);
+			Filename = FString::Printf(TEXT("%s%s"),*BaseFilename,*Extension);
+		}
+		ExternFileInfo.FilePath.FilePath = File;
+		ExternFileInfo.MountPath = FString::Printf(TEXT("%s/%s"),*Conf.PakConfig.MountPoint,*Filename);
+		PakExternAssets.AddExternFileToPak.Add(ExternFileInfo);
+	}
+	
+	PatchSetting->DefaultPakListOptions.Empty();
+	PatchSetting->DefaultPakListOptions.Empty();
+	PatchSetting->PakPathRegular = TEXT("");
+	PatchSetting->AddExternAssetsToPlatform.Add(PakExternAssets);
+	PatchSetting->bStorageNewRelease = false;
+	PatchSetting->bStorageDiffAnalysisResults = false;
+	PatchSetting->bStandaloneMode = false;
+	PatchSetting->bStorageConfig = true;
+	PatchSetting->bStoragePakFileInfo = false;
+	PatchSetting->bStorageUnrealPakList = false;
+	PatchSetting->SavePath.Path = FPaths::Combine(GetSettingObject()->GetSaveAbsPath(),Conf.PakConfig.ConfigName);
+		
+	UPatcherProxy* PatcherProxy = NewObject<UPatcherProxy>();
+	PatcherProxy->AddToRoot();
+	PatcherProxy->Init(PatchSetting.Get());
+	bool bExitStatus = PatcherProxy->DoExport();
+	PatcherProxy->RemoveFromRoot();
+
+	return bExitStatus;
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -18,8 +18,6 @@
 void SShaderPatchWidget::Construct(const FArguments& InArgs,
 	TSharedPtr<FHotPatcherContextBase> InContext)
 {
-	SetContext(InContext);
-	
 	ExportShaderPatchSettings = MakeShareable(new FExportShaderPatchSettings);
 	CreateExportFilterListView();
 	

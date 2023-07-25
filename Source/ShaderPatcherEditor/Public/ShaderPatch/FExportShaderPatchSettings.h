@@ -19,32 +19,55 @@
 
 #include "FExportShaderPatchSettings.generated.h"
 
+USTRUCT()
+struct SHADERPATCHEREDITOR_API FShaderPatchPakConf
+{
+	GENERATED_USTRUCT_BODY()
+	FShaderPatchPakConf()
+	{
+		FString AppName = FApp::GetProjectName();
+		ConfigName = FString::Printf(TEXT("%s_Patch"),*AppName);
+		MountPoint = FString::Printf(TEXT("../../../%s/ShaderLibs"),*AppName);
+	}
+	
+	UPROPERTY(EditAnywhere)
+	FString ConfigName;
+	UPROPERTY(EditAnywhere)
+	FString MountPoint;
+};
 
-USTRUCT(BlueprintType)
+USTRUCT()
 struct SHADERPATCHEREDITOR_API FShaderPatchConf
 {
 	GENERATED_USTRUCT_BODY()
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere)
 		ETargetPlatform Platform = ETargetPlatform::None;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
     	TArray<FDirectoryPath> OldMetadataDir;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere)
     	FDirectoryPath NewMetadataDir;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere)
    		bool bNativeFormat = false;
 	// since UE 4.26 (Below 4.26 this parameter has no effect)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 		bool bDeterministicShaderCodeOrder = true;
+	UPROPERTY(EditAnywhere,meta=(EditCondition="!bNativeFormat"))
+		bool bCreatePak = false;
+	UPROPERTY(EditAnywhere,meta=(EditCondition="bCreatePak"))
+		FShaderPatchPakConf PakConfig;
 };
 
 /** Singleton wrapper to allow for using the setting structure in SSettingsView */
-USTRUCT(BlueprintType)
-struct SHADERPATCHEREDITOR_API FExportShaderPatchSettings:public FHotPatcherSettingBase
+USTRUCT()
+struct SHADERPATCHEREDITOR_API FExportShaderPatchSettings:public FPatcherEntitySettingBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	FExportShaderPatchSettings(){}
+	FExportShaderPatchSettings()
+	{
+		SavePath.Path = TEXT("[PROJECTDIR]/Saved/HotPatcher/ShaderPatcher");
+	}
 	virtual ~FExportShaderPatchSettings(){};
 
 	FORCEINLINE static FExportShaderPatchSettings* Get()
@@ -60,6 +83,18 @@ public:
 	UPROPERTY(EditAnywhere, Category="Config")
 	TArray<FShaderPatchConf> ShaderPatchConfigs;
 
+	UPROPERTY(EditAnywhere, Category="SaveTo")
+	bool bStorageConfig = true;
+	
+	UPROPERTY(EditAnywhere, Category="SaveTo")
+	FDirectoryPath SavePath;
+
+	FString GetSaveAbsPath();
+	
+	UPROPERTY(EditAnywhere, Category="Advanced")
+	bool bStandaloneMode;
+
+	FString GetCombinedAdditionalCommandletArgs()const {return TEXT("");}
 };
 
 

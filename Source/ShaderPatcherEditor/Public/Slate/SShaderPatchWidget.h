@@ -18,7 +18,7 @@
  * Implements the cooked platforms panel.
  */
 class SShaderPatchWidget
-	: public SHotPatcherWidgetBase
+	: public SHotPatcherWidgetInterface
 {
 public:
 
@@ -40,7 +40,7 @@ public:
 	virtual void ExportConfig()const;
 	virtual void ResetConfig();
 	virtual void DoGenerate();
-	virtual FExportShaderPatchSettings* GetConfigSettings() override{return ExportShaderPatchSettings.Get();};
+	virtual FExportShaderPatchSettings* GetConfigSettings()override {return ExportShaderPatchSettings.Get();};
 	virtual FString GetMissionName() override{return TEXT("Shader Patch");}
 	virtual FText GetGenerateTooltipText() const override;
 protected:

@@ -17,6 +17,9 @@ class SHADERPATCHEREDITOR_API UShaderPatchProxy : public UHotPatcherProxyBase
 public:
 	virtual bool DoExport() override;
 	FORCEINLINE bool IsRunningCommandlet()const{return ::IsRunningCommandlet();}
+
+	bool CreatePak(const TArray<FString>& Files,const FShaderPatchConf& Conf);
+	
 	FORCEINLINE virtual FExportShaderPatchSettings* GetSettingObject()override
 	{
 		return (FExportShaderPatchSettings*)Setting;
