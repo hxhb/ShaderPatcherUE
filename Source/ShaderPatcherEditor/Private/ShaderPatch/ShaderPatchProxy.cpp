@@ -129,7 +129,7 @@ bool UShaderPatchProxy::CreatePak(const TArray<FString>& Files, const FShaderPat
 			FString Extension = FPaths::GetExtension(File,true);
 			Filename = FString::Printf(TEXT("%s%s"),*BaseFilename,*Extension);
 		}
-		ExternFileInfo.FilePath.FilePath = File;
+		ExternFileInfo.SetFilePath(File);
 		ExternFileInfo.MountPath = FString::Printf(TEXT("%s/%s"),*Conf.PakConfig.MountPoint,*Filename);
 		PakExternAssets.AddExternFileToPak.Add(ExternFileInfo);
 	}
