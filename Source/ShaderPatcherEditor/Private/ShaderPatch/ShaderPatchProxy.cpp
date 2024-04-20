@@ -136,7 +136,7 @@ bool UShaderPatchProxy::CreatePak(const TArray<FString>& Files, const FShaderPat
 	
 	PatchSetting->DefaultPakListOptions.Empty();
 	PatchSetting->DefaultPakListOptions.Empty();
-	PatchSetting->PakPathRegular = TEXT("");
+	PatchSetting->PakStorageRegular.PakPathRegular = TEXT("");
 	PatchSetting->AddExternAssetsToPlatform.Add(PakExternAssets);
 	PatchSetting->GetStorageOptions().bNewRelease = false;
 	PatchSetting->GetStorageOptions().bDiffAnalysisResults = false;
