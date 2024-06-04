@@ -138,10 +138,13 @@ bool UShaderPatchProxy::CreatePak(const TArray<FString>& Files, const FShaderPat
 	PatchSetting->PakStorageRegular.PakPathRegular = TEXT("");
 	PatchSetting->AddExternAssetsToPlatform.Add(PakExternAssets);
 	PatchSetting->GetStorageOptions().GetReleaseOptions().bStorageRelease = false;
-	PatchSetting->GetStorageOptions().bDiffAnalysisResults = false;
+	PatchSetting->GetStorageOptions().bPatchDiff = false;
 	PatchSetting->bStandaloneMode = false;
 	PatchSetting->bStorageConfig = true;
 	PatchSetting->GetStorageOptions().bGeneratePakInfo = false;
+	PatchSetting->GetStorageOptions().bPatchSummary = false;
+	PatchSetting->GetStorageOptions().bPatchDiff = false;
+	PatchSetting->GetStorageOptions().bPatchResults = false;
 	PatchSetting->GetUnrealPakSettings().bStorageResponseFile = false;
 	PatchSetting->SavePath.Path = FPaths::Combine(GetSettingObject()->GetSaveAbsPath(),Conf.PakConfig.ConfigName);
 	
