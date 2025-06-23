@@ -152,6 +152,7 @@ bool UShaderPatchProxy::CreatePak(const TArray<FString>& Files, const FShaderPat
 	PatcherProxy->AddToRoot();
 	PatcherProxy->Init(PatchSetting.Get());
 	bool bExitStatus = PatcherProxy->DoExport();
+	PatcherProxy->Shutdown();
 	PatcherProxy->RemoveFromRoot();
 
 	return bExitStatus;
