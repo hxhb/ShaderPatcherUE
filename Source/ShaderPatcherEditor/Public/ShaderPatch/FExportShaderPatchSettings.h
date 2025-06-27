@@ -92,7 +92,7 @@ public:
 	FString GetSaveAbsPath();
 	
 	UPROPERTY(EditAnywhere, Category="Advanced")
-	bool bStandaloneMode;
+	bool bStandaloneMode = false;
 
 	FString GetCombinedAdditionalCommandletArgs()const {return TEXT("");}
 };
